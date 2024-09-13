@@ -20,7 +20,7 @@ IMU_UUIDS = [
 ]
 
 
-USER_LOC = "Dining Room"
+USER_LOC = "Ayaan's Suite"
 
 TARGET_TAG_NAME = 'FallSensor'
 
@@ -215,20 +215,31 @@ class NanoIMUBLEClient:
             print(f"Error handling new data: {e}")
             self._connected = False
 
-   
     def create_new_json(self):
         if self.json_file:
             self.json_file.close()
+        
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         filename = f"imu_data_{timestamp}.json"
         self.json_file = open(filename, 'w')
-        # Initialize JSON file with an empty list
-        json.dump([], self.json_file)
+        
+        # Initialize JSON file with an empty structure
+        self.json_data = {
+            "Location": USER_LOC,
+            "Timestamp": [],
+            "Ax": [],
+            "Ay": [],
+            "Az": [],
+            "Gx": [],
+            "Gy": [],
+            "Gz": []
+        }
+        json.dump(self.json_data, self.json_file, indent=4)
         self.json_file.flush()
-
+ 
     def save_data(self) -> None:
-         if self._jsonout:
-              # Append new data to the appropriate lists
+        if self._jsonout:
+
             self.json_data["Timestamp"].append(datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f"))
             self.json_data["Ax"].append(self._data['ax'])
             self.json_data["Ay"].append(self._data['ay'])
@@ -236,16 +247,17 @@ class NanoIMUBLEClient:
             self.json_data["Gx"].append(self._data['gx'])
             self.json_data["Gy"].append(self._data['gy'])
             self.json_data["Gz"].append(self._data['gz'])
-                        
+                            
             # Update JSON file with new data
             self.json_file.seek(0)
             json.dump(self.json_data, self.json_file, indent=4)  # Use indent for readability
             self.json_file.flush()
+
+            # Rotate the JSON file if needed
             if time.time() - self.start_time > 60:
                 self.create_new_json()
                 self.start_time = time.time()
-
-
+     
     def calculate_sample_rate(self):
         current_time = time.time()
         self.sample_count += 1
