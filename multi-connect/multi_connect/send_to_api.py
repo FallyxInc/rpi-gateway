@@ -135,7 +135,7 @@ def main():
     print(script_directory)
     while(True):
         file_names = get_csv_files_from_directory(script_directory) 
-        if len(file_names) > 1:
+        if len(file_names) > 0:
             old_file = get_oldest_file(file_names)
             print(old_file)
             json_file = csv_to_json(old_file)
