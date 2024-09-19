@@ -103,8 +103,12 @@ def csv_to_json(csv_file_path):
     with open(csv_file_path, mode='r') as csv_file:
         csv_reader = csv.reader(csv_file)
 
-        # Read the first row to get the location
-        location_row = next(csv_reader)
+        try:
+            location_row = next(csv_reader)
+        except StopIteration:
+            print(f"CSV file {csv_file_path} is empty or has no data rows.")
+            return None 
+        
         data['Location'] = location_row[0]  # Assuming 'Location' is the first entry of the first row
 
         # Read the second row as headers and ignore it
