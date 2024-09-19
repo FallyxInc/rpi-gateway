@@ -138,7 +138,7 @@ class NanoIMUBLEClient:
             except (BleakError, asyncio.TimeoutError, Exception) as e:
                 print(f"Connection failed: {e}. Retry...")
                 self._connected = False
-                self._found = 
+                self._found = False
                 await asyncio.sleep(5)
                 
 
