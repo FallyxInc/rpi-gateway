@@ -129,7 +129,7 @@ def csv_to_json(csv_file_path):
     return json_file_path
 
 def main():
-    api_url = "http://3.98.214.27/inference"
+    api_url = "http://3.98.214.27:5000/inference"
     sd = os.path.dirname(os.path.abspath(__file__))
     script_directory = os.path.join(sd, "send_out")
     print(script_directory)
