@@ -25,7 +25,10 @@ IMU_UUIDS = [
 TARGET_TAG_NAME = 'FallSensor'
 GATEWAY_LOC = "Ayaan's Suite"
 
+rssi_threshold = 50
+
 imu_client = None
+
 
 class NanoIMUBLEClient:
     def __init__(self, service_uuid: str, characteristic_uuids: List[str], csvout: bool = True) -> None:
@@ -51,6 +54,9 @@ class NanoIMUBLEClient:
         self.samples_per_second = []
         self.last_print_time = time.time()
         self.file_name = None 
+        self.rssi_count = 0
+        self.rssi_list = []
+
 
     def create_new_csv(self):
         if self.file:
@@ -125,7 +131,7 @@ class NanoIMUBLEClient:
                 self.create_new_csv()
                 await self.start()
                 while self._connected:
-                    if self._running and self.newdata:
+                    if self._running and self.newdata: 
                         self.save_data()
                         if time.time() - self.last_print_time >= 0.1:  # Print every second
                             #print(f"Connected: {self._client.is_connected}")
@@ -140,9 +146,10 @@ class NanoIMUBLEClient:
                     await asyncio.sleep(0.01)
             except (BleakError, asyncio.TimeoutError, Exception) as e:
                 print(f"Connection failed: {e}. Retry...")
+                await self.disconnect()
                 self._connected = False
                 self._found = False 
-                await asyncio.sleep(5)
+                await asyncio.sleep(1)
                 
 
     async def disconnect(self) -> None:
@@ -152,6 +159,7 @@ class NanoIMUBLEClient:
             except Exception as e:
                 print(f"Disconnection failed: {e}")
             finally:
+                self.move_file()
                 self._connected = False
                 self._running = False
 
@@ -163,6 +171,8 @@ class NanoIMUBLEClient:
                 self._running = True
             except Exception as e:
                 print(f"Starting notification failed: {e}")
+                await self.disconnect()
+
 
     async def stop(self) -> None:
         if self._running:
@@ -171,6 +181,7 @@ class NanoIMUBLEClient:
                     await self._client.stop_notify(uuid)
             except Exception as e:
                 print(f"Stopping notification failed: {e}")
+                await self.disconnect()
 
 
     def newdata_hndlr(self, sender, data):
@@ -181,49 +192,33 @@ class NanoIMUBLEClient:
                 a_x = struct.unpack('<f', bytes(data[0:4]))[-1]
                 self._data['ax'] = a_x / 9.81 
 
-
-
             elif uuid == '12345678-1234-5678-1234-56789abcdef2':
                 #print(f"Accel Y UUID is {uuid}")
                 a_y = struct.unpack('<f', bytes(data[0:4]))[-1]
                 self._data['ay'] = a_y / 9.81
-
-
 
             elif uuid == '12345678-1234-5678-1234-56789abcdef3':
                 #print(f"Accel Z UUID is {uuid}")
                 a_z = struct.unpack('<f', bytes(data[0:4]))[-1]
                 self._data['az'] = a_z / 9.81
 
-                
-                # Handle data for UUID 12345678-1234-5678-1234-56789abcdef3
-                # Implement specific handling logic here
 
             elif uuid == '12345678-1234-5678-1234-56789abcdef4':
                 #print(f"Gyro X UUID is {uuid}")
                 self._data['gx'] = (struct.unpack('<f', bytes(data[0:4]))[-1])*57.2958
 
-                # Handle data for UUID 12345678-1234-5678-1234-56789abcdef4
-                # Implement specific handling logic here
 
             elif uuid == '12345678-1234-5678-1234-56789abcdef5':
                 #print(f"Gyro Y UUID is {uuid}")
                 self._data['gy'] = (struct.unpack('<f', bytes(data[0:4]))[-1])*57.2958
 
-                # Handle data for UUID 12345678-1234-5678-1234-56789abcdef5
-                # Implement specific handling logic here
-
             elif uuid == '12345678-1234-5678-1234-56789abcdef6':
                 #print(f"Gyro Z UUID is {uuid}")
                 self._data['gz'] = (struct.unpack('<f', bytes(data[0:4]))[-1])*57.2958
-                # Handle data for UUID 12345678-1234-5678-1234-56789abcdef6
-                # Implement specific handling logic here
 
             elif uuid == '12345678-1234-5678-1234-56789abcdef7':
                 #print(f"Timestamp UUID is {uuid}")
                 self._data['time'] = struct.unpack('<L', bytes(data[0:4]))[-1]
-                # Handle data for UUID 12345678-1234-5678-1234-56789abcdef7
-                # Implement specific handling logic here
 
             self.newdata = True
         except Exception as e:
@@ -236,7 +231,7 @@ class NanoIMUBLEClient:
             timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
             row = [
                 timestamp,
-                self.calculate_sample_rate(),
+                0,
                 self._data['time'] / 1000000.0,
                 self._data['ax'],
                 self._data['ay'],
@@ -262,7 +257,8 @@ class NanoIMUBLEClient:
             self.sample_count = 0
             self.last_sample_time = current_time
         if self.samples_per_second:
-            return round(sum(self.samples_per_second) / len(self.samples_per_second), 2)
+            sample_rate = sum(self.samples_per_second) / len(self.samples_per_second)
+            return round(sample_rate, 2)
         return 0
 
 
@@ -275,8 +271,7 @@ class NanoIMUBLEClient:
                 "Gyro: " +
                 f"{self.data['gx']:+3.3f}, " +
                 f"{self.data['gy']:+3.3f}, " +
-                f"{self.data['gz']:+3.3f} | " +
-                f"Sample Rate: {self.calculate_sample_rate():+3.2f} Hz")
+                f"{self.data['gz']:+3.3f} | ")
         sys.stdout.write(_str)
         sys.stdout.flush()
 
@@ -291,7 +286,34 @@ class NanoIMUBLEClient:
                     for characteristic in service.characteristics:
                         print(f"Characteristic UUID: {characteristic.uuid}")
     
-    def move_file(self, subdirectory_name='forward'):
+
+    def avg_rssi(self, window=100):
+        rssi = self.calculate_sample_rate()
+        self.rssi_list.append(rssi)
+        if self.rssi_count > window:
+            self.rssi_count = 0
+            print(sum(self.rssi_list))
+            print(len(self.rssi_list))
+            rssi_avg = sum(self.rssi_list)/len(self.rssi_list)
+            self.rssi_list.clear()
+            
+            return rssi_avg
+        self.rssi_count += 1
+        return 0
+        
+
+    async def calc_strength(self, threshold):
+        rssi_average = self.avg_rssi()
+        if rssi_average:
+            print(f"Calculated average RSSI: {rssi_average}")
+            if rssi_average > threshold:
+                print(f"Detected Weak Singal Strength(RSSI:{rssi_average}), Disconnecting....")
+                if self._connected:
+
+                    await self.disconnect()
+                    self._connected = False
+
+    def move_file(self):
 
         subdirectory_name='send_out'
         file_path = self.file_name
