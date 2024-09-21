@@ -106,7 +106,7 @@ class NanoIMUBLEClient:
                 return
 
         print("Peripheral device not found. Retry...")
-        await asyncio.sleep(5)
+        await asyncio.sleep(1)
 
     async def connect(self) -> None:
         while not self._connected:
@@ -140,9 +140,10 @@ class NanoIMUBLEClient:
                     await asyncio.sleep(0.01)
             except (BleakError, asyncio.TimeoutError, Exception) as e:
                 print(f"Connection failed: {e}. Retry...")
+                await self.disconnect()
                 self._connected = False
                 self._found = False 
-                await asyncio.sleep(5)
+                await asyncio.sleep(1)
                 
 
     async def disconnect(self) -> None:
@@ -152,6 +153,7 @@ class NanoIMUBLEClient:
             except Exception as e:
                 print(f"Disconnection failed: {e}")
             finally:
+                self.move_file()
                 self._connected = False
                 self._running = False
 
@@ -163,6 +165,7 @@ class NanoIMUBLEClient:
                 self._running = True
             except Exception as e:
                 print(f"Starting notification failed: {e}")
+                await self.disconnect()
 
     async def stop(self) -> None:
         if self._running:
@@ -171,6 +174,7 @@ class NanoIMUBLEClient:
                     await self._client.stop_notify(uuid)
             except Exception as e:
                 print(f"Stopping notification failed: {e}")
+                await self.disconnect()
 
 
     def newdata_hndlr(self, sender, data):
