@@ -183,21 +183,21 @@ class NanoIMUBLEClient:
             if uuid == '12345678-1234-5678-1234-56789abcdef1':
                 #print(f"Accel X UUID is {uuid}")
                 a_x = struct.unpack('<f', bytes(data[0:4]))[-1]
-                self._data['ax'] = a_x / 9.81 
+                self._data['ax'] = a_x 
 
 
 
             elif uuid == '12345678-1234-5678-1234-56789abcdef2':
                 #print(f"Accel Y UUID is {uuid}")
                 a_y = struct.unpack('<f', bytes(data[0:4]))[-1]
-                self._data['ay'] = a_y / 9.81
+                self._data['ay'] = a_y
 
 
 
             elif uuid == '12345678-1234-5678-1234-56789abcdef3':
                 #print(f"Accel Z UUID is {uuid}")
                 a_z = struct.unpack('<f', bytes(data[0:4]))[-1]
-                self._data['az'] = a_z / 9.81
+                self._data['az'] = a_z
 
                 
                 # Handle data for UUID 12345678-1234-5678-1234-56789abcdef3
@@ -205,21 +205,21 @@ class NanoIMUBLEClient:
 
             elif uuid == '12345678-1234-5678-1234-56789abcdef4':
                 #print(f"Gyro X UUID is {uuid}")
-                self._data['gx'] = (struct.unpack('<f', bytes(data[0:4]))[-1])*57.2958
+                self._data['gx'] = (struct.unpack('<f', bytes(data[0:4]))[-1])
 
                 # Handle data for UUID 12345678-1234-5678-1234-56789abcdef4
                 # Implement specific handling logic here
 
             elif uuid == '12345678-1234-5678-1234-56789abcdef5':
                 #print(f"Gyro Y UUID is {uuid}")
-                self._data['gy'] = (struct.unpack('<f', bytes(data[0:4]))[-1])*57.2958
+                self._data['gy'] = (struct.unpack('<f', bytes(data[0:4]))[-1])
 
                 # Handle data for UUID 12345678-1234-5678-1234-56789abcdef5
                 # Implement specific handling logic here
 
             elif uuid == '12345678-1234-5678-1234-56789abcdef6':
                 #print(f"Gyro Z UUID is {uuid}")
-                self._data['gz'] = (struct.unpack('<f', bytes(data[0:4]))[-1])*57.2958
+                self._data['gz'] = (struct.unpack('<f', bytes(data[0:4]))[-1])
                 # Handle data for UUID 12345678-1234-5678-1234-56789abcdef6
                 # Implement specific handling logic here
 
