@@ -10,7 +10,7 @@ def csv_columns_to_json(csv_file_path, json_file_path):
 
         # Read the first row to get the location
         location_row = next(csv_reader)
-        #data['Location'] = location_row[0]  # Assuming 'Location' is the first entry of the first row
+        data['Location'] = location_row[0]  # Assuming 'Location' is the first entry of the first row
 
         # Read the second row as headers and ignore it
         headers = next(csv_reader)
@@ -19,7 +19,7 @@ def csv_columns_to_json(csv_file_path, json_file_path):
         columns = list(zip(*csv_reader))  # Transpose the CSV rows to columns
 
         # Assuming a specific order: ['Timestamp', 'Ax', 'Ay', 'Az', 'Gx', 'Gy', 'Gz']
-        #data['Timestamp'] = list(columns[0])  # First column is 'Timestamp'
+        data['Timestamp'] = list(columns[0])  # First column is 'Timestamp'
         data['Ax'] = [float(i) for i in columns[3]]  # Second column is 'Ax'
         data['Ay'] = [float(i) for i in columns[4]]  # Third column is 'Ay'
         data['Az'] = [float(i) for i in columns[5]]  # Fourth column is 'Az'
@@ -32,6 +32,6 @@ def csv_columns_to_json(csv_file_path, json_file_path):
         json.dump(data, json_file, indent=4)
 
 # Example usage
-csv_file_path = 'imu_data_20240913_191719.csv'  # Path to your CSV file
-json_file_path = 'walking_pat.json'  # Path to the output JSON file
+csv_file_path = 'fall files/fall-5.csv'  # Path to your CSV file
+json_file_path = 'fall files/fall-5-old.json'  # Path to the output JSON file
 csv_columns_to_json(csv_file_path, json_file_path)
