@@ -13,8 +13,13 @@ Connection failed: [org.bluez.Error.Failed] Operation already in progress. Retry
 Seeed XIAO BLE Service
 Looking for Peripheral Device...
 
-Error #2: 
+Error 2:
+When it first coinnects to the device it moves a file with no data inb it ito the model. YOU can see it'll say after the cahractersic names that it moved a .csv file. 
 
+Error #3: 
+After a few hours of it staying on sometimes the files pile up and it doesnt send them every minute. You can disocnnect and connect back to the gateay in between as well.
+
+Eventually send_out becoms blank but I Looked and there were periods where it would just pilw a ton of files.
 
 
 
