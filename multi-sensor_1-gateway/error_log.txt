@@ -33,4 +33,4 @@ Failed to upload file. Status code: 502Response: <html>
 <hr><center>nginx/1.24.0</center>
 </body>
 </html>
--------------------------------
+-------------------------------Error upload file: expected str, bytes or os.PathLike object, not NoneType-------------------------------

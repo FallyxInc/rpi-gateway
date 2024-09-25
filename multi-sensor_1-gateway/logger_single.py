@@ -56,6 +56,7 @@ class NanoIMUBLEClient:
         if self.file:
             self.file.close()
             self.move_file()
+            self.file = None
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         filename = f"imu_data_{timestamp}_{self._device.address}.csv"
         self.file_name = filename

@@ -104,11 +104,21 @@ def csv_to_json(csv_file_path):
         csv_reader = csv.reader(csv_file)
 
         # Read the first row to get the location
-        location_row = next(csv_reader)
+        try:
+            location_row = next(csv_reader)
+
+        except StopIteration:
+            print("File is empty...Removing File")
+            return 0
+
         data['Location'] = location_row[0]  # Assuming 'Location' is the first entry of the first row
 
         # Read the second row as headers and ignore it
-        headers = next(csv_reader)
+        try:
+            headers = next(csv_reader)
+        except StopIteration:
+            print("File is empty...Removing File")
+            return 0
 
         # Read the remaining rows (data starting from the third row) and transpose them
         columns = list(zip(*csv_reader))  # Transpose the CSV rows to columns
@@ -128,6 +138,7 @@ def csv_to_json(csv_file_path):
     
     return json_file_path
 
+
 def main():
     api_url = "http://3.98.214.27:5000/inference"
     sd = os.path.dirname(os.path.abspath(__file__))
@@ -137,16 +148,18 @@ def main():
         file_names = get_csv_files_from_directory(script_directory) 
         if len(file_names) > 0:
             old_file = get_oldest_file(file_names)
-            print(old_file)
             json_file = csv_to_json(old_file)
-            print("Sending: ")
-            print(json_file)
-            send_to_rest_api(api_url, json_file)
-            time.sleep(1)
-            #shutil.move(json_file, os.path.join(processed_directory, os.path.basename(json_file)))
-            #shutil.move(old_file, os.path.join(processed_directory, os.path.basename(old_file)))
-            os.remove(json_file)
-            os.remove(old_file)
+            if json_file == 0:
+                os.remove(old_file)
+            else:
+                print("Sending: ")
+                print(json_file)
+                send_to_rest_api(api_url, json_file)
+                time.sleep(1)
+                #shutil.move(json_file, os.path.join(processed_directory, os.path.basename(json_file)))
+                #shutil.move(old_file, os.path.join(processed_directory, os.path.basename(old_file)))
+                os.remove(json_file)
+                os.remove(old_file)
 
 
 
