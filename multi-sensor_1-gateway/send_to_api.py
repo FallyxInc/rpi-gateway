@@ -155,7 +155,7 @@ def main():
                 print("Sending: ")
                 print(json_file)
                 send_to_rest_api(api_url, json_file)
-                time.sleep(1)
+                time.sleep(5)
                 #shutil.move(json_file, os.path.join(processed_directory, os.path.basename(json_file)))
                 #shutil.move(old_file, os.path.join(processed_directory, os.path.basename(old_file)))
                 os.remove(json_file)

@@ -53,7 +53,8 @@ class NanoIMUBLEClient:
         self.file_name = None 
 
     def create_new_csv(self):
-        if self.file:
+        if self.file is not None:
+            print("Moving old csv to create a new csv")
             self.file.close()
             self.move_file()
             self.file = None
