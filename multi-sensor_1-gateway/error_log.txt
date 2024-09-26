@@ -1,5 +1,6 @@
 NEW ERRORS: 
 
+IN PROGREESS
 Error #1: I took 2 devices out and then brough them back in at the same time and then it said the below and just froze.
 Found Peripheral Device 57:1D:FF:23:AA:A1. Local Name: FallSensor
 Attempting to connect to 57:1D:FF:23:AA:A1
