@@ -58,6 +58,7 @@ class NanoIMUBLEClient:
             self.file.close()
             self.move_file()
             self.file = None
+        self.start_time = time.time()
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         filename = f"imu_data_{timestamp}_{self._device.address}.csv"
         self.file_name = filename
@@ -115,39 +116,38 @@ class NanoIMUBLEClient:
             await self.discover_devices()
             if not self._found:
                 continue
-
-            try:
-                print(f"Attempting to connect to {self._device.address}")
-                self._client = BleakClient(self._device.address)
-                await self._client.connect()
-                print(f'Connected to {self._device.address}.')
-                self._connected = True
-                # Discover characteristics to verify
-                await self.discover_characteristics()
-                self.create_new_csv()
-                await self.start()
-                while self._connected:
-                    if self._running and self.newdata:
-                        self.save_data()
-                        if time.time() - self.last_print_time >= 3:  # Print every second
-                            print(f"Connected: {self._client.is_connected}")
-                            #self.print_newdata()
-                            self.last_print_time = time.time()
-                        self.newdata = False
-                    if not self._client.is_connected:
-                        print("Device disconnected. Exiting...")
-                        self._connected = False
-                        await self.disconnect()
-                        break
-                    await asyncio.sleep(0.01)
-            except (BleakError, asyncio.TimeoutError, Exception) as e:
-                print(f"Connection failed: {e}. Retry...")
-                await self.disconnect()
-                self._connected = False
-                self._found = False
-                await self.retry_connection()
-                await asyncio.sleep(1)
-                
+            if self._device is not None:
+                try:
+                    print(f"Attempting to connect to {self._device.address}")
+                    self._client = BleakClient(self._device.address)
+                    await self._client.connect()
+                    print(f'Connected to {self._device.address}.')
+                    self._connected = True
+                    # Discover characteristics to verify
+                    await self.discover_characteristics()
+                    self.create_new_csv()
+                    await self.start()
+                    while self._connected:
+                        if self._running and self.newdata:
+                            self.save_data()
+                            if time.time() - self.last_print_time >= 3:  # Print every second
+                                print(f"Connected: {self._client.is_connected}")
+                                #self.print_newdata()
+                                self.last_print_time = time.time()
+                            self.newdata = False
+                        if not self._client.is_connected:
+                            print("Device disconnected. Exiting...") 
+                            await self.disconnect()
+                            break
+                        await asyncio.sleep(0.01)
+                except (BleakError, asyncio.TimeoutError, Exception) as e:
+                    print(f"Connection failed: {e}. Retry...")
+                    await self.disconnect()
+                    self._connected = False
+                    self._found = False
+                    await self.retry_connection()
+                    await asyncio.sleep(1)
+            
 
     async def disconnect(self) -> None:
         if self._connected:
@@ -156,7 +156,9 @@ class NanoIMUBLEClient:
             except Exception as e:
                 print(f"Disconnection failed: {e}")
             finally:
+                print("Finished Disconnect routine")
                 self.move_file()
+                self._device = None
                 self._connected = False
                 self._running = False
 
@@ -325,7 +327,8 @@ class NanoIMUBLEClient:
         
         # Move the file
         shutil.move(file_path, new_file_path)
-        
+       
+        self.file = None
         print(f"File moved to {new_file_path}")
 
     async def retry_connection(self):
