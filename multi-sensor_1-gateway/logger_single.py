@@ -144,7 +144,8 @@ class NanoIMUBLEClient:
                 print(f"Connection failed: {e}. Retry...")
                 await self.disconnect()
                 self._connected = False
-                self._found = False 
+                self._found = False
+                await self.retry_connection()
                 await asyncio.sleep(1)
                 
 
@@ -326,6 +327,33 @@ class NanoIMUBLEClient:
         shutil.move(file_path, new_file_path)
         
         print(f"File moved to {new_file_path}")
+
+    async def retry_connection(self):
+
+        max_retries = 5
+        retry_delay = 2 
+
+        for attempt in range(max_retries):
+            try:
+                print(f"Retrying connection to {self.address}, attempt {attempt + 1}")
+                await self.client.connect()
+                print(f"Connected to {self.address} on attempt {attempt + 1}")
+
+                services = await self.client.get_services()
+                print(f"Discovered services: {services}")
+                break  
+
+            except Exception as e:
+                print(f"Retry failed: {e}")
+
+                if "failed to discover services" in str(e) or "device disconnected" in str(e):
+                    await self.handle_disconnection()
+
+                await asyncio.sleep(2)
+
+        else:
+            print(f"Failed to connect after {max_retries} attempts.")
+
 
 async def run():
     global imu_client
