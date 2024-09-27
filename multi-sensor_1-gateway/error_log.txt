@@ -1,6 +1,92 @@
 NEW ERRORS: 
 
-1 sensor and  gatewya coed/ only 1 logger script running: 
+1 sensor to 1 gateway/ only 1 logger script:
+Peripheral device not found. Retry...
+Seeed XIAO BLE Service
+Looking for Peripheral Device...
+Peripheral device not found. Retry...
+Seeed XIAO BLE Service
+Looking for Peripheral Device...
+Peripheral device not found. Retry...
+Seeed XIAO BLE Service
+Looking for Peripheral Device...
+Peripheral device not found. Retry...
+Seeed XIAO BLE Service
+Looking for Peripheral Device...
+Found Peripheral Device 54:06:E7:A9:DE:8D. Local Name: FallSensor
+Attempting to connect to 54:06:E7:A9:DE:8D
+Connection failed: . Retry...
+Retry failed: 'NanoIMUBLEClient' object has no attribute 'address'
+Retry failed: 'NanoIMUBLEClient' object has no attribute 'address'
+Retry failed: 'NanoIMUBLEClient' object has no attribute 'address'
+Retry failed: 'NanoIMUBLEClient' object has no attribute 'address'
+Retry failed: 'NanoIMUBLEClient' object has no attribute 'address'
+Failed to connect after 5 attempts.
+Seeed XIAO BLE Service
+Looking for Peripheral Device...
+Found Peripheral Device 54:06:E7:A9:DE:8D. Local Name: FallSensor
+Attempting to connect to 54:06:E7:A9:DE:8D
+Connected to 54:06:E7:A9:DE:8D.
+Service UUID: 12345678-1234-5678-1234-56789abcdef0
+Characteristic UUID: 12345678-1234-5678-1234-56789abcdef2
+Characteristic UUID: 12345678-1234-5678-1234-56789abcdef4
+Characteristic UUID: 12345678-1234-5678-1234-56789abcdef5
+Characteristic UUID: 12345678-1234-5678-1234-56789abcdef3
+Characteristic UUID: 12345678-1234-5678-1234-56789abcdef6
+Characteristic UUID: 12345678-1234-5678-1234-56789abcdef1
+Characteristic UUID: 12345678-1234-5678-1234-56789abcdef7
+Moving old csv to create a new csv
+Connection failed: The file imu_data_20240927_223400_6B:C0:70:09:F6:1C.csv does not exist.. Retry...
+Traceback (most recent call last):
+  File "/home/fallyx/Downloads/rpi-gateway-main/multi-sensor_1-gateway/logger_single.py", line 127, in connect
+    self.create_new_csv()
+  File "/home/fallyx/Downloads/rpi-gateway-main/multi-sensor_1-gateway/logger_single.py", line 59, in create_new_csv
+    self.move_file()
+  File "/home/fallyx/Downloads/rpi-gateway-main/multi-sensor_1-gateway/logger_single.py", line 308, in move_file
+    raise FileNotFoundError(f"The file {file_path} does not exist.")
+FileNotFoundError: The file imu_data_20240927_223400_6B:C0:70:09:F6:1C.csv does not exist.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/fallyx/Downloads/rpi-gateway-main/multi-sensor_1-gateway/logger_single.py", line 367, in <module>
+    loop.run_until_complete(run())
+  File "/usr/lib/python3.11/asyncio/base_events.py", line 653, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/home/fallyx/Downloads/rpi-gateway-main/multi-sensor_1-gateway/logger_single.py", line 361, in run
+    await imu_client.connect()
+  File "/home/fallyx/Downloads/rpi-gateway-main/multi-sensor_1-gateway/logger_single.py", line 145, in connect
+    await self.disconnect()
+  File "/home/fallyx/Downloads/rpi-gateway-main/multi-sensor_1-gateway/logger_single.py", line 159, in disconnect
+    self.move_file()
+  File "/home/fallyx/Downloads/rpi-gateway-main/multi-sensor_1-gateway/logger_single.py", line 308, in move_file
+    raise FileNotFoundError(f"The file {file_path} does not exist.")
+FileNotFoundError: The file imu_data_20240927_223400_6B:C0:70:09:F6:1C.csv does not exist.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/fallyx/Downloads/rpi-gateway-main/multi-sensor_1-gateway/logger_single.py", line 372, in <module>
+    asyncio.run(imu_client.disconnect())
+  File "/usr/lib/python3.11/asyncio/runners.py", line 190, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/asyncio/base_events.py", line 653, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/home/fallyx/Downloads/rpi-gateway-main/multi-sensor_1-gateway/logger_single.py", line 159, in disconnect
+    self.move_file()
+  File "/home/fallyx/Downloads/rpi-gateway-main/multi-sensor_1-gateway/logger_single.py", line 308, in move_file
+    raise FileNotFoundError(f"The file {file_path} does not exist.")
+FileNotFoundError: The file imu_data_20240927_223400_6B:C0:70:09:F6:1C.csv does not exist.
+
+
+
+1 sensor and  gatewya coed/ only 1 logger script running: (gateway £2)
 Peripheral device not found. Retry...
 Seeed XIAO BLE Service
 Looking for Peripheral Device...
