@@ -17,6 +17,7 @@ with open(output_csv, 'w', newline='') as outfile:
     
     # Write the static row first
     writer.writerow(location_row)
+
     
     # Write the rest of the original CSV
     writer.writerows(reader)
