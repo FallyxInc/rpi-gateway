@@ -102,7 +102,7 @@ class NanoIMUBLEClient:
         devices = await BleakScanner.discover()
         for d in devices:
             local_name = d.name or 'Unknown'
-            if local_name == TARGET_TAG_NAME and (d.rssi > -60):
+            if local_name == TARGET_TAG_NAME and (d.rssi > -70):
                 print(f"RSSI: {d.rssi}")
                 self._found = True
                 self._device = d
