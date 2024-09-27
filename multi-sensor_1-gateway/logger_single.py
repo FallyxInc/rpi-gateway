@@ -98,15 +98,16 @@ class NanoIMUBLEClient:
     async def discover_devices(self):
         print('Seeed XIAO BLE Service')
         print('Looking for Peripheral Device...')
-
+        devices = None
         devices = await BleakScanner.discover()
-        for d in devices:
-            local_name = d.name or 'Unknown'
-            if local_name == TARGET_TAG_NAME:
-                self._found = True
-                self._device = d
-                print(f'Found Peripheral Device {self._device.address}. Local Name: {local_name}')
-                return
+        if devices is not None:
+            for d in devices:
+                local_name = d.name or 'Unknown'
+                if local_name == TARGET_TAG_NAME:
+                    self._found = True
+                    self._device = d
+                    print(f'Found Peripheral Device {self._device.address}. Local Name: {local_name}')
+                    return
 
         print("Peripheral device not found. Retry...")
         await asyncio.sleep(1)
