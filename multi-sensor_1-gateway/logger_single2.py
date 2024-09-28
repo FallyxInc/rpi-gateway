@@ -347,8 +347,8 @@ class NanoIMUBLEClient:
 
     async def retry_connection(self):
 
-        max_retries = 5
-        retry_delay = 3 
+        max_retries = 3
+        retry_delay = 2 
 
         for attempt in range(max_retries):
             try:
