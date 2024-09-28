@@ -98,6 +98,9 @@ class NanoIMUBLEClient:
     async def discover_devices(self):
         print('Seeed XIAO BLE Service')
         print('Looking for Peripheral Device...')
+        for i in range(5):
+            print("Waiting...")
+            await asyncio.sleep(1)
         devices = None
         devices = await BleakScanner.discover()
         for d in devices:
@@ -120,9 +123,7 @@ class NanoIMUBLEClient:
             if self._device is not None:
                 try:
                     print(f"Attempting to connect to {self._device.address}")
-                    for i in range(5):
-                        print("Waiting...")
-                        await asyncio.sleep(1)
+
                     self._client = BleakClient(self._device.address)
                     await self._client.connect()
                     print(f'Connected to {self._device.address}.')
