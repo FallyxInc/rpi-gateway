@@ -62,6 +62,12 @@ class NanoIMUBLEClient:
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         filename = f"imu_data_{timestamp}_{self._device.address}.csv"
         self.file_name = filename
+        print(os.path.join(os.getcwd(),filename))
+        for file in os.listdir(os.getcwd()):
+            if file.endswith(".csv"):
+                if str(self._device.address) in file:
+                    print(f"File Match Found")
+                    return 0
         self.file = open(filename, 'w', newline='')
         self.writer = csv.writer(self.file)
 
@@ -74,6 +80,7 @@ class NanoIMUBLEClient:
         self.sample_count = 0
         self.last_sample_time = time.time()
         self.samples_per_second = []
+        return 1
 
     @property
     def connected(self) -> bool:
@@ -98,9 +105,6 @@ class NanoIMUBLEClient:
     async def discover_devices(self):
         print('Seeed XIAO BLE Service')
         print('Looking for Peripheral Device...')
-        for i in range(5):
-            print("Waiting...")
-            await asyncio.sleep(1)
         devices = None
         devices = await BleakScanner.discover()
         for d in devices:
@@ -123,14 +127,16 @@ class NanoIMUBLEClient:
             if self._device is not None:
                 try:
                     print(f"Attempting to connect to {self._device.address}")
-
                     self._client = BleakClient(self._device.address)
                     await self._client.connect()
                     print(f'Connected to {self._device.address}.')
                     self._connected = True
                     # Discover characteristics to verify
+                    await asyncio.sleep(3)
                     await self.discover_characteristics()
-                    self.create_new_csv()
+                    err = self.create_new_csv()
+                    if not err:
+                        raise Exception("File match found")
                     await self.start()
                     while self._connected:
                         if self._running and self.newdata:
@@ -162,7 +168,10 @@ class NanoIMUBLEClient:
                 print(f"Disconnection failed: {e}")
             finally:
                 print("Finished Disconnect routine")
-                self.move_file()
+                try:
+                    self.move_file()
+                except:
+                    pass
                 self._device = None
                 self._connected = False
                 self._running = False
@@ -339,7 +348,7 @@ class NanoIMUBLEClient:
     async def retry_connection(self):
 
         max_retries = 5
-        retry_delay = 2 
+        retry_delay = 3 
 
         for attempt in range(max_retries):
             try:
