@@ -120,7 +120,9 @@ class NanoIMUBLEClient:
             if self._device is not None:
                 try:
                     print(f"Attempting to connect to {self._device.address}")
-                    await asyncio.sleep(3)
+                    for i in range(5):
+                        print("Waiting...")
+                        await asyncio.sleep(1)
                     self._client = BleakClient(self._device.address)
                     await self._client.connect()
                     print(f'Connected to {self._device.address}.')
