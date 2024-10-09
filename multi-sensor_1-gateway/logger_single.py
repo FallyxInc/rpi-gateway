@@ -99,6 +99,7 @@ class NanoIMUBLEClient:
         print('Seeed XIAO BLE Service')
         print('Looking for Peripheral Device...')
         devices = None
+        
         devices = await BleakScanner.discover()
         for d in devices:
             local_name = d.name or 'Unknown'
