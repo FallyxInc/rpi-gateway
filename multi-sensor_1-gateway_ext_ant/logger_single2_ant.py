@@ -167,6 +167,7 @@ class NanoIMUBLEClient:
             except Exception as e:
                 print(f"Disconnection failed: {e}")
             finally:
+                self.log_disconnect()
                 print("Finished Disconnect routine")
                 try:
                     self.move_file()
@@ -371,6 +372,14 @@ class NanoIMUBLEClient:
         else:
             print(f"Failed to connect after {max_retries} attempts.")
 
+    def log_disconnect(self):
+        # Get the current date and time
+        path = 'disconnect_log.txt'
+        current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        
+        # Open the file in append mode and write the current date and time
+        with open(file_path, 'a') as file:
+            file.write(current_datetime + '\n')
 
 async def run():
     global imu_client
