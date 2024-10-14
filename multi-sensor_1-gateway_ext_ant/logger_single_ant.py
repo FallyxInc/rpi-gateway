@@ -364,10 +364,10 @@ class NanoIMUBLEClient:
         # Get the current date and time
         path = 'disconnect_log.txt'
         current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        
+        device = self._device.address
         # Open the file in append mode and write the current date and time
-        with open(file_path, 'a') as file:
-            file.write(current_datetime + '\n')
+        with open(path, 'a') as file:
+            file.write("Device: " + str(device) + " @ " + current_datetime + '\n')
 
 async def run():
     global imu_client
