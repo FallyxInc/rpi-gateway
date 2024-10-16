@@ -99,8 +99,9 @@ class NanoIMUBLEClient:
         print('Seeed XIAO BLE Service')
         print('Looking for Peripheral Device...')
         devices = None
-        
-        devices = await BleakScanner.discover(adapter="hci0")
+        scanner = BleakScanner()
+        scanner.set_scanning_filter(rssi=-80)
+        devices = await scanner.discover(adapter="hci0")
         for d in devices:
             local_name = d.name or 'Unknown'
             if local_name == TARGET_TAG_NAME and (d.rssi > -80):
