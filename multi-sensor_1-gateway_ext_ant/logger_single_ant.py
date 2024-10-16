@@ -100,7 +100,6 @@ class NanoIMUBLEClient:
         print('Looking for Peripheral Device...')
         devices = None
         scanner = BleakScanner()
-        scanner.set_scanning_filter(rssi=-80)
         devices = await scanner.discover(adapter="hci0")
         for d in devices:
             local_name = d.name or 'Unknown'
