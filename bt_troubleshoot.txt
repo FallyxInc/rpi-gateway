@@ -1,0 +1,13 @@
+1. Used 'dmesg' to view more logs
+    a. Tried 'sudo apt-get install --reinstall pi-bluetooth' to reinstall firmware
+    b. Restared Pi
+
+2. TRied manual firmware install
+    a. 'wget https://github.com/winterheart/broadcom-bt-firmware/raw/master/brcm/BCM20702A1-0a5c-21e8.hcd'
+    b. sudo cp BCM20702A1-0a5c-21e8.hcd /lib/firmware/brcm/
+    c.  sudo hciconfig hci0 down
+        sudo hciconfig hci0 up
+        sudo systemctl restart bluetooth
+3. Tried full upgrade
+    a. sudo apt update
+       sudo apt upgrade
