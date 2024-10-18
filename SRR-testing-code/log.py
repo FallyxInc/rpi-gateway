@@ -3,8 +3,8 @@ import time
 import threading
 
 # Define the two scripts you want to run
-SCRIPT_1 = "python logger_single2_ant.py"
-SCRIPT_2 = "python logger_single2_ant.py"
+SCRIPT_1 = "python logger_single2.py"
+SCRIPT_2 = "python logger_single2.py"
 
 # Function to run a script, poll its status, and restart it if it exits
 def monitor_script(command, script_name):
