@@ -31,4 +31,16 @@ sudo hciconfig hci0 up
 sudo systemctl restart bluetooth
 ```
 5. Shutdown the pi and physically unplug the device
+6.  Create the venv
+   ```
+   python -m venv ~/venv
+   ```
+7. Source the venv
+   ```
+   source ~/venv/bin/activate
+   ```
+8. Install packages
+   ```
+   pip install bleak requests
+   ```
 
