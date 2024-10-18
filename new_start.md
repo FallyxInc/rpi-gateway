@@ -30,5 +30,5 @@ sudo hciconfig hci0 down
 sudo hciconfig hci0 up
 sudo systemctl restart bluetooth
 ```
-5. Restart Pi
+5. Shutdown the pi and physically unplug the device
 
