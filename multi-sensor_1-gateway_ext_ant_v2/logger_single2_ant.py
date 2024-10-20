@@ -4,6 +4,7 @@ import struct
 import sys
 import time
 import csv
+import subprocess
 import shutil
 import fcntl
 import os
@@ -431,8 +432,16 @@ class NanoIMUBLEClient:
             file.close()
             return True
 
+def clear_bt():
+    subprocess.run(['bluetoothctl', 'power', 'off'], check=True)
+    time.sleep(1)
+    # Power on the Bluetooth adapter
+    subprocess.run(['bluetoothctl', 'power', 'on'], check=True)
+    print("BT adapter reset")
+
 async def run():
     global imu_client
+    clear_bt()
     imu_client = NanoIMUBLEClient('12345678-1234-5678-1234-56789abcdef0', IMU_UUIDS, True)
     await imu_client.connect()
     await imu_client.disconnect()
