@@ -3,9 +3,9 @@ import time
 import threading
 
 # Define the two scripts you want to run
-SCRIPT_1 = "python logger_single2.py"
-SCRIPT_2 = "python logger_single2.py"
-SCRIPT_3 = "python logger_single2.py"
+SCRIPT_1 = "python connect.py"
+SCRIPT_2 = "python connect.py"
+SCRIPT_3 = "python connect.py"
 
 # Function to run a script, poll its status, and restart it if it exits
 def monitor_script(command, script_name):
