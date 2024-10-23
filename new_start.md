@@ -32,3 +32,14 @@ sudo systemctl restart bluetooth
 ```
 5. Shutdown the pi and physically unplug the device
 
+6. When the pi starts up use below to make sure the hci adapter is up
+
+```
+sudo hciconfig
+```
+if DOWN then use:
+```
+sudo hciconfig hci0 up
+```
+
+
