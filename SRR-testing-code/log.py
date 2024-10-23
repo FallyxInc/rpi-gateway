@@ -5,6 +5,7 @@ import threading
 # Define the two scripts you want to run
 SCRIPT_1 = "python logger_single2.py"
 SCRIPT_2 = "python logger_single2.py"
+SCRIPT_3 = "python logger_single2.py"
 
 # Function to run a script, poll its status, and restart it if it exits
 def monitor_script(command, script_name):
@@ -31,12 +32,15 @@ def monitor_script(command, script_name):
 if __name__ == "__main__":
     thread1 = threading.Thread(target=monitor_script, args=(SCRIPT_1, "Script 1"))
     thread2 = threading.Thread(target=monitor_script, args=(SCRIPT_2, "Script 2"))
+    thread3 = threading.Thread(target=monitor_script, args=(SCRIPT_3, "Script 3"))
 
     # Start both threads
     thread1.start()
     thread2.start()
+    thread3.start()
 
     # Wait for both threads to finish (this never happens because of the infinite while loop)
     thread1.join()
     thread2.join()
+    thread3.join()
  
