@@ -27,6 +27,8 @@ def upload_json_to_api(file_path: str, api_url: str, headers: dict = None) -> No
             if response.status_code == 200:
                 print("File uploaded successfully.")
                 print("Response:", response.json())
+                return 1
+
             else:
                 f = open("error_log.txt", "a")
                 f.write(f"Failed to upload file. Status code: {response.status_code}")
@@ -37,6 +39,7 @@ def upload_json_to_api(file_path: str, api_url: str, headers: dict = None) -> No
                 f.write("-------------------------------")
                 print(f"Failed to upload file. Status code: {response.status_code}")
                 print("Response:", response.text)
+                return 0
                 
 
     except Exception as e:
@@ -89,8 +92,8 @@ def send_to_rest_api(api_url, file):
     }
 
     # Upload the file
-    upload_json_to_api(file, api_url, headers)
-
+    ret = upload_json_to_api(file, api_url, headers)
+    return ret
 def csv_to_json(csv_file_path):
     
     file_name = os.path.splitext(csv_file_path)[0]
@@ -154,12 +157,13 @@ def main():
             else:
                 print("Sending: ")
                 print(json_file)
-                send_to_rest_api(api_url, json_file)
+                ret = send_to_rest_api(api_url, json_file)
                 time.sleep(5)
                 #shutil.move(json_file, os.path.join(processed_directory, os.path.basename(json_file)))
                 #shutil.move(old_file, os.path.join(processed_directory, os.path.basename(old_file)))
-                os.remove(json_file)
-                os.remove(old_file)
+                if ret == 1:
+                    os.remove(json_file)
+                    os.remove(old_file)
         time.sleep(1)
 
 
