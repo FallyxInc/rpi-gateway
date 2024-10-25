@@ -95,31 +95,21 @@ def send_to_rest_api(api_url, file):
     ret = upload_json_to_api(file, api_url, headers)
     return ret
 def csv_to_json(csv_file_path):
- import csv
-import json
-import os
-
-def csv_to_json(csv_file_path):
+    
     file_name = os.path.splitext(csv_file_path)[0]
+    # Create a new file path with .json extension
     json_file_path = f"{file_name}.json"
     
-    data = {
-        'Location': None,
-        'Timestamp': [],
-        'Ax': [],
-        'Ay': [],
-        'Az': [],
-        'Gx': [],
-        'Gy': [],
-        'Gz': []
-    }
+    data = {}
 
+    # Open the CSV file and read its content
     with open(csv_file_path, mode='r') as csv_file:
         csv_reader = csv.reader(csv_file)
 
         # Read the first row to get the location
         try:
             location_row = next(csv_reader)
+
         except StopIteration:
             print("File is empty...Removing File")
             return 0
@@ -133,38 +123,25 @@ def csv_to_json(csv_file_path):
             print("File is empty...Removing File")
             return 0
 
-        # Process each row and add data only if all entries are valid
-        for row in csv_reader:
-            try:
-                # Extract and convert values for each column, skipping row if any value fails
-                timestamp = row[0]
-                ax = float(row[3])
-                ay = float(row[4])
-                az = float(row[5])
-                gx = float(row[6])
-                gy = float(row[7])
-                gz = float(row[8])
+        # Read the remaining rows (data starting from the third row) and transpose them
+        columns = list(zip(*csv_reader))  # Transpose the CSV rows to columns
 
-                # Append values to data if all conversions are successful
-                data['Timestamp'].append(timestamp)
-                data['Ax'].append(ax)
-                data['Ay'].append(ay)
-                data['Az'].append(az)
-                data['Gx'].append(gx)
-                data['Gy'].append(gy)
-                data['Gz'].append(gz)
-
-            except (ValueError, IndexError) as e:
-                print(f"Skipping row due to error: {e}")
+        # Assuming a specific order: ['Timestamp', 'Ax', 'Ay', 'Az', 'Gx', 'Gy', 'Gz']
+        data['Timestamp'] = list(columns[0])  # First column is 'Timestamp'
+        data['Ax'] = [float(i) for i in columns[3]]  # Second column is 'Ax'
+        data['Ay'] = [float(i) for i in columns[4]]  # Third column is 'Ay'
+        data['Az'] = [float(i) for i in columns[5]]  # Fourth column is 'Az'
+        data['Gx'] = [float(i) for i in columns[6]]  # Fifth column is 'Gx'
+        data['Gy'] = [float(i) for i in columns[7]]  # Sixth column is 'Gy'
+        data['Gz'] = [float(i) for i in columns[8]]  # Seventh column is 'Gz'
 
     # Write the output to a JSON file
     with open(json_file_path, mode='w') as json_file:
         json.dump(data, json_file, indent=4)
     
     return json_file_path
-  
 
-    
+
 def main():
     api_url = "http://3.98.214.27:5000/inference"
     sd = os.path.dirname(os.path.abspath(__file__))
